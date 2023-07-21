@@ -1,0 +1,11 @@
+name: 'QASE Test Results Upload'
+description: 'Uploads test case results to QASE.'
+inputs:
+  xml_file_path:
+    description: 'Path to the XML file containing test case data.'
+    required: true
+runs:
+  using: 'docker'
+  image: 'user/custom-action:v2'
+  env:
+    QASE_TOKEN: ${{ secrets.QASE_TOKEN }}
