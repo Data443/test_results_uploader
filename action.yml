@@ -8,4 +8,4 @@ runs:
   using: 'docker'
   image: 'user/custom-action:v2'
   env:
-    QASE_TOKEN: ${{ secrets.QASE_TOKEN }}
+    QASE_TOKEN: 78a635c4491dd8c825e184a5811f1d07fc13212500532da9e69e1fd4337b96ad
