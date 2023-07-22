@@ -4,6 +4,7 @@ inputs:
   xml_file_path:
     description: 'Path to the XML file containing test case data.'
     required: true
+    default: 'TestResults.xml'
 runs:
   using: 'docker'
   image: 'user/custom-action:v2'
