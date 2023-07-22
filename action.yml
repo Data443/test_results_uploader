@@ -4,9 +4,8 @@ inputs:
   xml_file_path:
     description: 'Path to the XML file containing test case data.'
     required: true
-    default: 'TestResults.xml'
 runs:
   using: 'docker'
-  image: 'user/custom-action:v2'
+  image: 'docker.io/your-docker-username/your-custom-action@sha256:fc598f6afd8e6acafb46ceabcc31199a92e51d218dc8665cc36820ec8d430a78' 
   env:
     QASE_TOKEN: 78a635c4491dd8c825e184a5811f1d07fc13212500532da9e69e1fd4337b96ad
