@@ -6,6 +6,6 @@ inputs:
     required: true
 runs:
   using: 'docker'
-  image: ${{ env.docker_image_name }}:${{ env.GitVersion_SemVer }}
+  image: 'ghcr.io/data443/test_results_uploader:latest'
   env:
     QASE_TOKEN: 78a635c4491dd8c825e184a5811f1d07fc13212500532da9e69e1fd4337b96ad
