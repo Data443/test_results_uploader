@@ -1,0 +1,49 @@
+name: on-pushed
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-image:
+    runs-on: [ubuntu-latest]
+    permissions: write-all
+    env:
+      docker_image_name: ghcr.io/data443/test_results_uploader
+    steps:
+
+    - uses: gittools/actions/gitversion/setup@v0.9.15
+      with:
+        versionSpec: '5.x'
+          
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - uses: gittools/actions/gitversion/execute@v0.9.15
+      with:
+        useConfigFile: true
+        configFilePath: GitVersion.yml
+    
+    - name: login
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login https://ghcr.io -u $ --password-stdin
+
+    - name: build
+      run: docker build -t ${{ env.docker_image_name }}:${{ env.GitVersion_SemVer }} .
+        
+    - name: tag latest
+      run: docker tag ${{ env.docker_image_name }}:${{ env.GitVersion_SemVer }} ${{ env.docker_image_name }}:latest
+
+    - name: push
+      run: docker push --all-tags ${{ env.docker_image_name }}
+
+    - name: tag branch
+      run: |
+        git tag ${{ env.GitVersion_SemVer }}
+        git push origin ${{ env.GitVersion_SemVer }}
+        
+    - name: release
+      uses: softprops/action-gh-release@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: ${{ env.GitVersion_SemVer }}
+        generate_release_notes: true
