@@ -13,7 +13,7 @@ def update_test_case(test_case_data):
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
-        "Token": os.environ["QASE_TOKEN"]
+        "Token": os.environ["QASE_TOKEN"]  # Access the environment variable here
     }
 
     response = requests.post(url, json=payload, headers=headers)
