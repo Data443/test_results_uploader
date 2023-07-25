@@ -4,8 +4,11 @@ inputs:
   xml_file_path:
     description: 'Path to the XML file containing test case data.'
     required: true
+  qase_token:
+    description: 'QASE API token.'
+    required: true
 runs:
   using: 'docker'
   image: 'ghcr.io/data443/test_results_uploader:latest'
   env:
-    QASE_TOKEN: 78a635c4491dd8c825e184a5811f1d07fc13212500532da9e69e1fd4337b96ad
+    QASE_TOKEN: ${{ inputs.qase_token }}  # Use the qase_token input as the environment variable
