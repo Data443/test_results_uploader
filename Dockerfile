@@ -5,13 +5,12 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy the necessary files to the container
-COPY entrypoint.sh ./  
-
-COPY main.py ./
-COPY requirements.txt ./
+COPY entrypoint.sh /app/
+COPY main.py /app/
+COPY requirements.txt /app/
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Set the entrypoint for the container
-ENTRYPOINT ["sh", "./entrypoint.sh"]  # Update the entrypoint path
+ENTRYPOINT ["sh", "/app/entrypoint.sh"]  # Use the absolute path
