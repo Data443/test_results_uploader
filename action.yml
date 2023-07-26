@@ -9,6 +9,10 @@ inputs:
     required: true
 runs:
   using: 'docker'
-  image: 'ghcr.io/data443/test_results_uploader:latest'  # Corrected image name
+  image: 'ghcr.io/data443/test_results_uploader:latest'
   env:
-    QASE_TOKEN: ${{ inputs.qase_token }}  # Use the qase_token input as the environment variable
+    QASE_TOKEN: ${{ inputs.qase_token }}
+  container:
+    # Mount the current working directory as /github/workspace inside the container
+    volumes:
+      - .:/github/workspace
