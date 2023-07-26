@@ -5,8 +5,8 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy the necessary files to the container
-COPY entrypoint.sh ./
-COPY main.py ./
+COPY entrypoint.sh /app/
+COPY main.py /app/
 COPY requirements.txt /app/
 
 # Install Python dependencies
