@@ -10,6 +10,7 @@ jobs:
     env:
       docker_image_name: ghcr.io/data443/test_results_uploader
     steps:
+
     - uses: gittools/actions/gitversion/setup@v0.9.15
       with:
         versionSpec: '5.x'
@@ -28,12 +29,6 @@ jobs:
 
     - name: login
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-    - name: List files in the working directory (action repository)
-      run: ls -la
-
-    - name: List files in the container being built
-      run: docker run --rm ${{ env.docker_image_name }}:${{ env.GitVersion_SemVer }} ls -la
 
     - name: Build Docker image
       run: docker build -t ${{ env.docker_image_name }}:${{ env.GitVersion_SemVer }} .
