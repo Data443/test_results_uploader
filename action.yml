@@ -13,6 +13,6 @@ runs:
   env:
     QASE_TOKEN: ${{ inputs.qase_token }}
   container:
-    # Mount the current working directory as /github/workspace inside the container
+    # Mount the current working directory as /app inside the container
     volumes:
-      - .:/github/workspace
+      - .:/app
