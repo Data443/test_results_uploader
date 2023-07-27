@@ -16,3 +16,4 @@ runs:
     # Mount the current working directory as /app inside the container
     volumes:
       - .:/app
+
