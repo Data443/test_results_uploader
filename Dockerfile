@@ -7,14 +7,14 @@ WORKDIR /app
 # Copy the necessary files to the container
 COPY main.py /app/
 COPY requirements.txt /app/
+COPY entrypoint.sh /app/  
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Set executable permissions for the entrypoint script
-COPY entrypoint.sh /app/
+# Set executable permissions for main.py and entrypoint.sh
+RUN chmod +x /app/main.py
 RUN chmod +x /app/entrypoint.sh
 
 # Set the entrypoint for the container
 ENTRYPOINT ["/app/entrypoint.sh"]
-
