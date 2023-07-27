@@ -25,7 +25,8 @@ def create_test_run(qase_token, repository_code, test_plan_id):
     if response.status_code == 200:
         return response.json()["result"]["id"]
     else:
-        print("Failed to create test run.")
+        print(f"Failed to create test run. Status code: {response.status_code}")
+        print(response.json())
         return None
 
 def update_test_case(test_case_data, qase_token):
@@ -76,6 +77,7 @@ if __name__ == "__main__":
     xml_file_path = sys.argv[1]
     qase_token = sys.argv[2]
     main(xml_file_path, qase_token)
+
 
 
 # import os
