@@ -16,5 +16,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN chmod +x /app/main.py
 RUN chmod +x /app/entrypoint.sh
 
-# Set the entrypoint for the container
-ENTRYPOINT ["/app/entrypoint.sh"]
+# Update the entrypoint to accept arguments
+ENTRYPOINT ["./entrypoint.sh"]
