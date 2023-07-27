@@ -9,6 +9,7 @@ inputs:
     required: true
 runs:
   using: 'docker'
-  image: 'ghcr.io/data443/test_results_uploader:latest'
+  image: 'Dockerfile'
   env:
     QASE_TOKEN: ${{ inputs.qase_token }}
+
