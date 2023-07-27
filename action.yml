@@ -12,8 +12,3 @@ runs:
   image: 'ghcr.io/data443/test_results_uploader:latest'
   env:
     QASE_TOKEN: ${{ inputs.qase_token }}
-  container:
-    # Mount the current working directory as /app inside the container
-    volumes:
-      - .:/app
-
