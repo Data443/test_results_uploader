@@ -14,6 +14,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Set executable permissions for entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
+RUN chmod +x /app/main.py
+RUN chmod +x /app/requirements.txt
+
 
 # Set the entrypoint for the container
 ENTRYPOINT ["/app/entrypoint.sh"]
