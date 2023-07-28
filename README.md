@@ -1,12 +1,8 @@
 # test_results_uploader
 
-Simple overview of use/purpose.
-
 ## Description
 
 This Docker container is designed to create a test run based on a specified test plan in QASE and update test case statuses in the created run using XML input. 
-
-## Getting Started
 
 ### Dependencies
 
@@ -15,8 +11,8 @@ This Docker container is designed to create a test run based on a specified test
 
 ### Executing program
 
-* How to run the program
-* Step-by-step bullets
+Below is an example of how you could call the action in another repository's workflow.
+
 ```
 name: EXAMPLE
 on: [pull_request]
@@ -48,9 +44,8 @@ jobs:
 
 Contributors names and contact info
 
-Andrew Lazare
-@AndrewLazare443
-andrew.lazare@data443.com
+* Andrew Lazare
+* andrew.lazare@data443.com
 
 ## Version History
 
