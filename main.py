@@ -46,15 +46,14 @@ def update_test_case(test_case_data, qase_token):
     response = requests.post(url, json=payload, headers=headers)
     print(response.text)
 
-def main(xml_file_path, qase_token):
+def main(xml_file_path, qase_token, test_plan_id):
     # Load and parse the XML file
     tree = ET.parse(xml_file_path)
     root = tree.getroot()
 
-    # Extract repository code and test plan ID from the XML
+    # Extract repository code from the XML
     repository_code = root.find("TestCase/RepositoryCode").text
-    test_plan_id = 4  # Replace this with the actual test plan ID from your XML or pass it as a command-line argument
-    
+
     # Create a new test run and get the test run ID
     test_run_id = create_test_run(qase_token, repository_code, test_plan_id)
     
@@ -71,9 +70,10 @@ def main(xml_file_path, qase_token):
         update_test_case(test_case_data, qase_token)
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python main.py <path_to_xml_file> <qase_token>")
+    if len(sys.argv) < 4:
+        print("Usage: python main.py <path_to_xml_file> <qase_token> <test_plan_id>")
         sys.exit(1)
     xml_file_path = sys.argv[1]
     qase_token = sys.argv[2]
-    main(xml_file_path, qase_token)
+    test_plan_id = int(sys.argv[3])
+    main(xml_file_path, qase_token, test_plan_id)
