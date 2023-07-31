@@ -67,16 +67,15 @@ def main(xml_file_path, qase_token):
         sys.exit(1)
 
     for test_case_elem in root.findall('test-case'):
-        # Extract data from the <output> tag
+        # Extract data from the <output> tag's CDATA section
         output_elem = test_case_elem.find('output')
         if output_elem is None:
             print("Error: 'output' element not found in the XML.")
             sys.exit(1)
 
         output_data = output_elem.text.strip()
-        output_lines = output_data.split("\n")
         test_case_data = {}
-        for line in output_lines:
+        for line in output_data.split("\n"):
             key, value = line.strip().split("=")
             test_case_data[key] = value
 
