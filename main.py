@@ -28,6 +28,7 @@ def create_test_run(qase_token, repository_code, test_plan_id):
 
     response = requests.post(url, json=payload, headers=headers)
     if response.status_code == 200:
+        logger.info(f"Test run created. Test run ID: {response.json()['result']['id']}")
         return response.json()["result"]["id"]
     else:
         logger.error(f"Failed to create test run. Status code: {response.status_code}")
@@ -97,6 +98,7 @@ def main(xml_file_path, qase_token):
                         "TestCaseId": int(test_case_id_value),
                         "Status": test_case_elem.get("result")
                     }
+                    logger.info(f"Updating test case: {test_case_data}")
                     update_test_case(test_case_data, qase_token)
 
 if __name__ == "__main__":
