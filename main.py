@@ -39,7 +39,8 @@ def update_test_case(test_case_data, qase_token):
 
     payload = {
         "status": test_case_data["Status"],
-        "case_id": test_case_data["TestCaseId"]
+        "case_id": test_case_data["TestCaseId"],
+        "additional_info": f"RepositoryCode={test_case_data['RepositoryCode']}\nTestCaseId={test_case_data['TestCaseId']}"
     }
     
     headers = {
@@ -55,9 +56,6 @@ def main(xml_file_path, qase_token):
     # Load and parse the XML file
     tree = ET.parse(xml_file_path)
     root = tree.getroot()
-
-    # Add this line to print the XML content
-    print(ET.tostring(root, encoding='utf8').decode('utf8'))
 
     # Extract repository code and test plan ID from the XML
     test_case_elem = root.find("test-case")
