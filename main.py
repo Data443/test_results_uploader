@@ -2,11 +2,12 @@ import os
 import sys
 import requests
 import xml.etree.ElementTree as ET
-from datetime import datetime
 import logging
+from datetime import datetime
 
-# Set up logging configuration
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def create_test_run(qase_token, repository_code, test_plan_id):
     url = f"https://api.qase.io/v1/run/{repository_code}"
@@ -29,8 +30,8 @@ def create_test_run(qase_token, repository_code, test_plan_id):
     if response.status_code == 200:
         return response.json()["result"]["id"]
     else:
-        logging.error(f"Failed to create test run. Status code: {response.status_code}")
-        logging.error(response.json())
+        logger.error(f"Failed to create test run. Status code: {response.status_code}")
+        logger.error(response.json())
         return None
 
 def update_test_case(test_case_data, qase_token):
@@ -48,7 +49,7 @@ def update_test_case(test_case_data, qase_token):
     }
 
     response = requests.post(url, json=payload, headers=headers)
-    logging.info(response.text)
+    logger.info(response.text)
 
 def main(xml_file_path, qase_token):
     # Load and parse the XML file
@@ -58,7 +59,7 @@ def main(xml_file_path, qase_token):
     # Extract repository code and test plan ID from the XML
     test_case_elem = root.find("test-case")
     if test_case_elem is None:
-        logging.error("No 'test-case' elements found in the XML.")
+        logger.error("No 'test-case' elements found in the XML.")
         sys.exit(1)
 
     repository_code = test_case_elem.get("name").split(".")[0]
@@ -68,13 +69,14 @@ def main(xml_file_path, qase_token):
     test_run_id = create_test_run(qase_token, repository_code, test_plan_id)
 
     if not test_run_id:
+        logger.error("Failed to create test run.")
         sys.exit(1)
 
     for test_case_elem in root.findall('test-case'):
         # Extract data from the <output> tag's CDATA section
         output_elem = test_case_elem.find('output')
         if output_elem is None:
-            logging.error("'output' element not found in the XML.")
+            logger.error("'output' element not found in the XML.")
             sys.exit(1)
 
         output_data = output_elem.text.strip()
@@ -88,14 +90,11 @@ def main(xml_file_path, qase_token):
         test_case_data["TestCaseId"] = int(test_case_data["TestCaseId"])
         test_case_data["Status"] = test_case_elem.get("result")
 
-        # Log the parsed test case data at INFO level
-        logging.info(f"Parsed Test Case Data: {test_case_data}")
-
         update_test_case(test_case_data, qase_token)
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        logging.error("Usage: python main.py <path_to_xml_file> <qase_token>")
+        logger.error("Usage: python main.py <path_to_xml_file> <qase_token>")
         sys.exit(1)
     xml_file_path = sys.argv[1]
     qase_token = sys.argv[2]
