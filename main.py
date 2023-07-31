@@ -57,6 +57,10 @@ def main(xml_file_path, qase_token):
     tree = ET.parse(xml_file_path)
     root = tree.getroot()
 
+    # Debug: Print XML contents
+    logger.info("XML Contents:")
+    logger.info(ET.tostring(root, encoding='utf-8').decode())
+
     # Extract repository code and test plan ID from the XML
     test_case_elem = root.find("test-case")
     if test_case_elem is None:
