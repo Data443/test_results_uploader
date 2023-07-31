@@ -52,7 +52,7 @@ def main(xml_file_path, qase_token):
     root = tree.getroot()
 
     # Extract repository code and test plan ID from the XML
-    test_case_elem = root.find("test-case")
+    test_case_elem = root.find("./test-case")
     if test_case_elem is None:
         print("Error: No 'test-case' elements found in the XML.")
         sys.exit(1)
