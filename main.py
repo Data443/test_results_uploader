@@ -57,27 +57,17 @@ def main(xml_file_path, qase_token):
     tree = ET.parse(xml_file_path)
     root = tree.getroot()
 
-    # Debug: Print XML contents
-    logger.info("XML Contents:")
+    # Debug: Print XML tree
+    logger.info("XML Tree:")
     logger.info(ET.tostring(root, encoding='utf-8').decode())
 
-    # Extract repository code and test plan ID from the XML
-    test_case_elem = root.find("test-case")
-    if test_case_elem is None:
+    # Check if there are any 'test-case' elements in the XML
+    test_case_elems = root.findall('test-case')
+    if not test_case_elems:
         logger.error("No 'test-case' elements found in the XML.")
         sys.exit(1)
 
-    repository_code = test_case_elem.get("name").split(".")[0]
-    test_plan_id = 4  # Replace this with the actual test plan ID from your XML or pass it as a command-line argument
-
-    # Create a new test run and get the test run ID
-    test_run_id = create_test_run(qase_token, repository_code, test_plan_id)
-
-    if not test_run_id:
-        logger.error("Failed to create test run.")
-        sys.exit(1)
-
-    for test_case_elem in root.findall('test-case'):
+    for test_case_elem in test_case_elems:
         # Extract data from the <output> tag's CDATA section
         output_elem = test_case_elem.find('output')
         if output_elem is None:
@@ -90,9 +80,19 @@ def main(xml_file_path, qase_token):
             key, value = line.strip().split("=")
             test_case_data[key] = value
 
+        repository_code = test_case_data.get("RepositoryCode")
+        test_case_id = test_case_data.get("TestCaseId")
+
+        if repository_code is None or test_case_id is None:
+            logger.error("RepositoryCode or TestCaseId missing in the XML.")
+            sys.exit(1)
+
+        logger.info(f"Extracted RepositoryCode: {repository_code}")
+        logger.info(f"Extracted TestCaseId: {test_case_id}")
+
         test_case_data["RepositoryCode"] = repository_code
-        test_case_data["TestRunId"] = test_run_id
-        test_case_data["TestCaseId"] = int(test_case_data["TestCaseId"])
+        test_case_data["TestRunId"] = create_test_run(qase_token, repository_code, 4)  # Replace '4' with the actual test plan ID
+        test_case_data["TestCaseId"] = int(test_case_id)
         test_case_data["Status"] = test_case_elem.get("result")
 
         update_test_case(test_case_data, qase_token)
