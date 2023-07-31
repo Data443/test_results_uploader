@@ -3,6 +3,10 @@ import sys
 import requests
 import xml.etree.ElementTree as ET
 from datetime import datetime
+import logging
+
+# Set up logging configuration
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
 def create_test_run(qase_token, repository_code, test_plan_id):
     url = f"https://api.qase.io/v1/run/{repository_code}"
@@ -25,8 +29,8 @@ def create_test_run(qase_token, repository_code, test_plan_id):
     if response.status_code == 200:
         return response.json()["result"]["id"]
     else:
-        print(f"Failed to create test run. Status code: {response.status_code}")
-        print(response.json())
+        logging.error(f"Failed to create test run. Status code: {response.status_code}")
+        logging.error(response.json())
         return None
 
 def update_test_case(test_case_data, qase_token):
@@ -44,7 +48,7 @@ def update_test_case(test_case_data, qase_token):
     }
 
     response = requests.post(url, json=payload, headers=headers)
-    print(response.text)
+    logging.info(response.text)
 
 def main(xml_file_path, qase_token):
     # Load and parse the XML file
@@ -52,9 +56,9 @@ def main(xml_file_path, qase_token):
     root = tree.getroot()
 
     # Extract repository code and test plan ID from the XML
-    test_case_elem = root.find("./test-case")
+    test_case_elem = root.find("test-case")
     if test_case_elem is None:
-        print("Error: No 'test-case' elements found in the XML.")
+        logging.error("No 'test-case' elements found in the XML.")
         sys.exit(1)
 
     repository_code = test_case_elem.get("name").split(".")[0]
@@ -70,7 +74,7 @@ def main(xml_file_path, qase_token):
         # Extract data from the <output> tag's CDATA section
         output_elem = test_case_elem.find('output')
         if output_elem is None:
-            print("Error: 'output' element not found in the XML.")
+            logging.error("'output' element not found in the XML.")
             sys.exit(1)
 
         output_data = output_elem.text.strip()
@@ -84,11 +88,14 @@ def main(xml_file_path, qase_token):
         test_case_data["TestCaseId"] = int(test_case_data["TestCaseId"])
         test_case_data["Status"] = test_case_elem.get("result")
 
+        # Log the parsed test case data at INFO level
+        logging.info(f"Parsed Test Case Data: {test_case_data}")
+
         update_test_case(test_case_data, qase_token)
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: python main.py <path_to_xml_file> <qase_token>")
+        logging.error("Usage: python main.py <path_to_xml_file> <qase_token>")
         sys.exit(1)
     xml_file_path = sys.argv[1]
     qase_token = sys.argv[2]
