@@ -71,39 +71,33 @@ def main(xml_file_path, qase_token):
         sys.exit(1)
 
     for test_case_elem in test_case_elems:
-        # Extract data from the 'test-case' element
-        test_case_id = test_case_elem.get('id')
-        test_case_name = test_case_elem.get('name')
-        repository_code = None
-        test_case_id_value = None
-
         # Find the 'output' element within 'test-case'
         output_elem = test_case_elem.find('output')
         if output_elem is not None and output_elem.text:
             # Extract 'RepositoryCode' and 'TestCaseId' from the 'output' element text
             output_lines = output_elem.text.strip().split('\n')
+            repository_code = None
+            test_case_id_value = None
             for line in output_lines:
-                parts = line.strip().split('=')
-                if len(parts) == 2:
-                    key, value = parts
-                    if key.strip() == 'RepositoryCode':
-                        repository_code = value.strip()
-                    elif key.strip() == 'TestCaseId':
-                        test_case_id_value = value.strip()
+                key, value = line.strip().split('=')
+                if key.strip() == 'RepositoryCode':
+                    repository_code = value.strip()
+                elif key.strip() == 'TestCaseId':
+                    test_case_id_value = value.strip()
 
-        logger.info(f"Test Case ID: {test_case_id}, Test Case Name: {test_case_name}, RepositoryCode: {repository_code}, TestCaseId: {test_case_id_value}")
+            logger.info(f"RepositoryCode: {repository_code}, TestCaseId: {test_case_id_value}")
 
-        # Call the functions with the extracted values
-        if repository_code and test_case_id_value:
-            test_run_id = create_test_run(qase_token, repository_code, 4)  # Replace '4' with the actual test plan ID
-            if test_run_id:
-                test_case_data = {
-                    "RepositoryCode": repository_code,
-                    "TestRunId": test_run_id,
-                    "TestCaseId": int(test_case_id_value),
-                    "Status": test_case_elem.get("result")
-                }
-                update_test_case(test_case_data, qase_token)
+            # Call the functions with the extracted values
+            if repository_code and test_case_id_value:
+                test_run_id = create_test_run(qase_token, repository_code, 4)  # Replace '4' with the actual test plan ID
+                if test_run_id:
+                    test_case_data = {
+                        "RepositoryCode": repository_code,
+                        "TestRunId": test_run_id,
+                        "TestCaseId": int(test_case_id_value),
+                        "Status": test_case_elem.get("result")
+                    }
+                    update_test_case(test_case_data, qase_token)
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
