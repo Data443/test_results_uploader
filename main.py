@@ -31,8 +31,7 @@ def create_test_run(qase_token, repository_code, test_plan_id):
         return response.json()["result"]["id"]
     else:
         logger.error(f"Failed to create test run. Status code: {response.status_code}")
-        print(f"Failed to create test run. Status code: {response.status_code}")  # Add explicit print
-        print(response.json())  # Add explicit print
+        logger.error(response.json())
         return None
 
 def update_test_case(test_case_data, qase_token):
@@ -50,7 +49,7 @@ def update_test_case(test_case_data, qase_token):
     }
 
     response = requests.post(url, json=payload, headers=headers)
-    print(response.text)  # Add explicit print
+    logger.info(response.text)
 
 def main(xml_file_path, qase_token):
     # Load and parse the XML file
@@ -58,10 +57,10 @@ def main(xml_file_path, qase_token):
     root = tree.getroot()
 
     # Extract repository code and test plan ID from the XML
-    test_case_elem = root.find("test-case")
+    test_case_elem = root.find("./test-case")
     if test_case_elem is None:
         logger.error("No 'test-case' elements found in the XML.")
-        print("Error: No 'test-case' elements found in the XML.")  # Add explicit print
+        print("Error: No 'test-case' elements found in the XML.", file=sys.stderr)
         sys.exit(1)
 
     repository_code = test_case_elem.get("name").split(".")[0]
@@ -72,18 +71,32 @@ def main(xml_file_path, qase_token):
 
     if not test_run_id:
         logger.error("Failed to create test run.")
-        print("Failed to create test run.")  # Add explicit print
+        print("Failed to create test run.", file=sys.stderr)
         sys.exit(1)
 
     for test_case_elem in root.findall('test-case'):
-        # ... (same as before)
+        # Extract data from the <output> tag's CDATA section
+        output_elem = test_case_elem.find('output')
+        if output_elem is None:
+            logger.error("'output' element not found in the XML.")
+            sys.exit(1)
+
+        output_data = output_elem.text.strip()
+        test_case_data = {}
+        for line in output_data.split("\n"):
+            key, value = line.strip().split("=")
+            test_case_data[key] = value
+
+        test_case_data["RepositoryCode"] = repository_code
+        test_case_data["TestRunId"] = test_run_id
+        test_case_data["TestCaseId"] = int(test_case_data["TestCaseId"])
+        test_case_data["Status"] = test_case_elem.get("result")
 
         update_test_case(test_case_data, qase_token)
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         logger.error("Usage: python main.py <path_to_xml_file> <qase_token>")
-        print("Usage: python main.py <path_to_xml_file> <qase_token>")  # Add explicit print
         sys.exit(1)
     xml_file_path = sys.argv[1]
     qase_token = sys.argv[2]
