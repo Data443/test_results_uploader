@@ -62,7 +62,7 @@ def main(xml_file_path, qase_token):
     logger.info(ET.tostring(root, encoding='utf-8').decode())
 
     # Check if there are any 'test-case' elements in the XML
-    test_case_elems = root.findall('.//test-case')
+    test_case_elems = root.findall('.//test-suite/test-case')  # Updated XPath expression
     num_test_cases = len(test_case_elems)
     logger.info(f"Number of 'test-case' elements found in the XML: {num_test_cases}")
 
