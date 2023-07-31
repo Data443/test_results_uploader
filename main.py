@@ -59,19 +59,23 @@ def main(xml_file_path, qase_token):
     root = tree.getroot()
 
     # Debug: Print XML tree
-    logger.info("XML Tree:")
-    logger.info(ET.tostring(root, encoding='utf-8').decode())
+    logger.debug("XML Tree:")
+    logger.debug(ET.tostring(root, encoding='utf-8').decode())
 
     # Check if there are any 'test-case' elements in the XML
     test_case_elems = root.findall('test-case') or root.findall('Test-case') or root.findall('Test-Case')
     num_test_cases = len(test_case_elems)
-    logger.info(f"Number of 'test-case' elements found in the XML: {num_test_cases}")
+    logger.debug(f"Number of 'test-case' elements found in the XML: {num_test_cases}")
 
     if not test_case_elems:
         logger.error("No 'test-case' elements found in the XML.")
         sys.exit(1)
 
     for test_case_elem in test_case_elems:
+        # Debug: Print XML of each 'test-case' element
+        logger.debug("Test-case XML:")
+        logger.debug(ET.tostring(test_case_elem, encoding='utf-8').decode())
+
         # Find the 'output' element within 'test-case'
         output_elem = test_case_elem.find('output')
         if output_elem is not None and output_elem.text:
