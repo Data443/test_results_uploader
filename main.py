@@ -6,7 +6,7 @@ import logging
 from datetime import datetime
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, stream=sys.stderr)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def create_test_run(qase_token, repository_code, test_plan_id):
@@ -56,11 +56,13 @@ def main(xml_file_path, qase_token):
     tree = ET.parse(xml_file_path)
     root = tree.getroot()
 
+    # Add this line to print the XML content
+    print(ET.tostring(root, encoding='utf8').decode('utf8'))
+
     # Extract repository code and test plan ID from the XML
-    test_case_elem = root.find("./test-case")
+    test_case_elem = root.find("test-case")
     if test_case_elem is None:
         logger.error("No 'test-case' elements found in the XML.")
-        print("Error: No 'test-case' elements found in the XML.", file=sys.stderr)
         sys.exit(1)
 
     repository_code = test_case_elem.get("name").split(".")[0]
@@ -71,7 +73,6 @@ def main(xml_file_path, qase_token):
 
     if not test_run_id:
         logger.error("Failed to create test run.")
-        print("Failed to create test run.", file=sys.stderr)
         sys.exit(1)
 
     for test_case_elem in root.findall('test-case'):
