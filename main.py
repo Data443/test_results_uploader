@@ -61,8 +61,8 @@ def main(xml_file_path, qase_token):
     logger.debug("XML Tree:")
     logger.debug(ET.tostring(root, encoding='utf-8').decode())
 
-    # Check if there are any 'test-case' elements in the XML
-    test_case_elems = root.findall('test-case') or root.findall('Test-case') or root.findall('Test-Case')
+    # Check if there are any 'test-case' elements in the XML using a different XPath expression
+    test_case_elems = root.findall(".//test-case")
     num_test_cases = len(test_case_elems)
     logger.debug(f"Number of 'test-case' elements found in the XML: {num_test_cases}")
 
