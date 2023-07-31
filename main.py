@@ -52,7 +52,12 @@ def main(xml_file_path, qase_token):
     root = tree.getroot()
 
     # Extract repository code and test plan ID from the XML
-    repository_code = root.find("test-case").get("name").split(".")[0]
+    test_case_elem = root.find("test-case")
+    if test_case_elem is None:
+        print("Error: No 'test-case' elements found in the XML.")
+        sys.exit(1)
+
+    repository_code = test_case_elem.get("name").split(".")[0]
     test_plan_id = 4  # Replace this with the actual test plan ID from your XML or pass it as a command-line argument
 
     # Create a new test run and get the test run ID
@@ -63,7 +68,12 @@ def main(xml_file_path, qase_token):
 
     for test_case_elem in root.findall('test-case'):
         # Extract data from the <output> tag
-        output_data = test_case_elem.find('output').text.strip()
+        output_elem = test_case_elem.find('output')
+        if output_elem is None:
+            print("Error: 'output' element not found in the XML.")
+            sys.exit(1)
+
+        output_data = output_elem.text.strip()
         output_lines = output_data.split("\n")
         test_case_data = {}
         for line in output_lines:
