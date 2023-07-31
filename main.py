@@ -62,40 +62,48 @@ def main(xml_file_path, qase_token):
     logger.info(ET.tostring(root, encoding='utf-8').decode())
 
     # Check if there are any 'test-case' elements in the XML
-    test_case_elems = root.findall('test-case')
+    test_case_elems = root.findall('.//test-case')
+    num_test_cases = len(test_case_elems)
+    logger.info(f"Number of 'test-case' elements found in the XML: {num_test_cases}")
+
     if not test_case_elems:
         logger.error("No 'test-case' elements found in the XML.")
         sys.exit(1)
 
     for test_case_elem in test_case_elems:
-        # Extract data from the <output> tag's CDATA section
+        # Extract data from the 'test-case' element
+        test_case_id = test_case_elem.get('id')
+        test_case_name = test_case_elem.get('name')
+        repository_code = None
+        test_case_id_value = None
+
+        # Find the 'output' element within 'test-case'
         output_elem = test_case_elem.find('output')
-        if output_elem is None:
-            logger.error("'output' element not found in the XML.")
-            sys.exit(1)
+        if output_elem is not None and output_elem.text:
+            # Extract 'RepositoryCode' and 'TestCaseId' from the 'output' element text
+            output_lines = output_elem.text.strip().split('\n')
+            for line in output_lines:
+                parts = line.strip().split('=')
+                if len(parts) == 2:
+                    key, value = parts
+                    if key.strip() == 'RepositoryCode':
+                        repository_code = value.strip()
+                    elif key.strip() == 'TestCaseId':
+                        test_case_id_value = value.strip()
 
-        output_data = output_elem.text.strip()
-        test_case_data = {}
-        for line in output_data.split("\n"):
-            key, value = line.strip().split("=")
-            test_case_data[key] = value
+        logger.info(f"Test Case ID: {test_case_id}, Test Case Name: {test_case_name}, RepositoryCode: {repository_code}, TestCaseId: {test_case_id_value}")
 
-        repository_code = test_case_data.get("RepositoryCode")
-        test_case_id = test_case_data.get("TestCaseId")
-
-        if repository_code is None or test_case_id is None:
-            logger.error("RepositoryCode or TestCaseId missing in the XML.")
-            sys.exit(1)
-
-        logger.info(f"Extracted RepositoryCode: {repository_code}")
-        logger.info(f"Extracted TestCaseId: {test_case_id}")
-
-        test_case_data["RepositoryCode"] = repository_code
-        test_case_data["TestRunId"] = create_test_run(qase_token, repository_code, 4)  # Replace '4' with the actual test plan ID
-        test_case_data["TestCaseId"] = int(test_case_id)
-        test_case_data["Status"] = test_case_elem.get("result")
-
-        update_test_case(test_case_data, qase_token)
+        # Call the functions with the extracted values
+        if repository_code and test_case_id_value:
+            test_run_id = create_test_run(qase_token, repository_code, 4)  # Replace '4' with the actual test plan ID
+            if test_run_id:
+                test_case_data = {
+                    "RepositoryCode": repository_code,
+                    "TestRunId": test_run_id,
+                    "TestCaseId": int(test_case_id_value),
+                    "Status": test_case_elem.get("result")
+                }
+                update_test_case(test_case_data, qase_token)
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
