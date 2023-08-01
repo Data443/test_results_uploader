@@ -3,8 +3,8 @@ import sys
 import requests
 import xml.etree.ElementTree as ET
 import logging
+import re
 from datetime import datetime
-import re  # Added import for regular expressions
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -137,5 +137,4 @@ if __name__ == "__main__":
         logger.error("Usage: python main.py <path_to_xml_file> <qase_token>")
         sys.exit(1)
     xml_file_path = sys.argv[1]
-    qase_token = sys.argv[2]
-    main(xml_file_path, qase_token)
+    qase_token = sys.argv[2
