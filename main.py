@@ -67,6 +67,16 @@ def main(xml_file_path, qase_token):
     logger.debug(f"Number of 'test-case' elements found in the XML: {num_test_cases}")
 
     if not test_case_elems:
+        # If 'test-case' elements are not found at the root level, try to find them under 'test-suite' elements
+        test_suite_elems = root.findall('.//test-suite')
+        for suite_elem in test_suite_elems:
+            test_case_elems = suite_elem.findall('.//test-case')
+            num_test_cases = len(test_case_elems)
+            if num_test_cases > 0:
+                logger.debug("Found 'test-case' elements under 'test-suite' element.")
+                break
+
+    if not test_case_elems:
         logger.error("No 'test-case' elements found in the XML.")
         sys.exit(1)
 
