@@ -27,10 +27,9 @@ def create_test_run(qase_token, repository_code, test_plan_id):
         "plan_id": test_plan_id
     }
 
+    response = requests.post(url, json=payload, headers=headers)
     logger.debug(f"Test Run Creation URL: {url}")
     logger.debug(f"Test Run Creation Payload: {payload}")
-
-    response = requests.post(url, json=payload, headers=headers)
     logger.debug(f"Test Run Creation Response: {response.text}")
 
     if response.status_code == 200:
@@ -143,3 +142,5 @@ if __name__ == "__main__":
         sys.exit(1)
     xml_file_path = sys.argv[1]
     qase_token = sys.argv[2]
+
+    main(xml_file_path, qase_token)
