@@ -4,6 +4,7 @@ import requests
 import xml.etree.ElementTree as ET
 import logging
 from datetime import datetime
+import re  # Added import for regular expressions
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -91,12 +92,21 @@ def main(xml_file_path, qase_token):
         sys.exit(1)
 
     for test_case_elem in test_case_elems:
-        # Extract 'RepositoryCode' and 'TestCaseId' from 'output' element
+        # Extract 'RepositoryCode' and 'TestCaseId' from 'output' element using regular expressions
         output_elem = test_case_elem.find('.//output')  # <-- Updated XPath query here
         if output_elem is not None and output_elem.text:
             output_text = output_elem.text.strip()
-            if output_text.startswith('<![CDATA[') and output_text.endswith(']]>'):
-                output_text = output_text[len('<![CDATA['):-len(']]>')]
+
+            # Use regular expression to extract the content within CDATA tags
+            cdata_pattern = r'<!\[CDATA\[(.*?)]]>'
+            cdata_match = re.search(cdata_pattern, output_text, re.DOTALL)
+
+            if cdata_match:
+                output_text = cdata_match.group(1).strip()
+
+                logger.debug(f"Extracted Output Text: {output_text}")
+
+                # Call the functions with the extracted values
                 repository_code, test_case_id_value = None, None
                 for line in output_text.strip().split('\n'):
                     line = line.strip()  # Remove leading/trailing whitespace
