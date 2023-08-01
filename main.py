@@ -57,8 +57,8 @@ def main(xml_file_path, qase_token):
     tree = ET.parse(xml_file_path)
     root = tree.getroot()
 
-    # Debug: Print XML tree
-    logger.debug("XML Tree:")
+    # Debug: Print the content of the root element
+    logger.debug("XML Root Element:")
     logger.debug(ET.tostring(root, encoding='utf-8').decode())
 
     # Check if there are any 'test-case' elements in the XML
