@@ -12,16 +12,16 @@ logger = logging.getLogger(__name__)
 
 def create_test_run(qase_token, repository_code, test_plan_id):
     url = f"https://api.qase.io/v1/run/{repository_code}"
-    
+
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
         "Token": qase_token
     }
-    
+
     # Generate the test run title with the current date and time
     test_run_title = f"Automated Test Run - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    
+
     payload = {
         "title": test_run_title,
         "plan_id": test_plan_id
@@ -60,7 +60,7 @@ def update_test_case(test_case_data, qase_token):
         "case_id": test_case_data["TestCaseId"],
         "additional_info": additional_info
     }
-    
+
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
@@ -142,5 +142,8 @@ if __name__ == "__main__":
         sys.exit(1)
     xml_file_path = sys.argv[1]
     qase_token = sys.argv[2]
+
+    logger.debug(f"XML File Path: {xml_file_path}")
+    logger.debug(f"QASE Token: {qase_token}")
 
     main(xml_file_path, qase_token)
