@@ -62,7 +62,7 @@ def main(xml_file_path, qase_token):
     logger.debug(ET.tostring(root, encoding='utf-8').decode())
 
     # Check if there are any 'test-case' elements in the XML
-    test_case_elems = root.findall('test-case')
+    test_case_elems = root.findall('.//test-case')
     num_test_cases = len(test_case_elems)
     logger.debug(f"Number of 'test-case' elements found in the XML: {num_test_cases}")
 
@@ -89,17 +89,16 @@ def main(xml_file_path, qase_token):
         output_elem = test_case_elem.find('output')
         if output_elem is not None and output_elem.text:
             # Extract 'RepositoryCode' and 'TestCaseId' from the 'output' element text
-            output_lines = output_elem.text.strip().split('\n')
             repository_code = None
             test_case_id_value = None
-            for line in output_lines:
-                key, value = line.strip().split('=')
+            for line in output_elem.text.strip().split('\n'):
+                line = line.strip()  # Remove leading/trailing whitespace
+                key, value = line.split('=')
                 if key.strip() == 'RepositoryCode':
                     repository_code = value.strip()
                 elif key.strip() == 'TestCaseId':
                     test_case_id_value = value.strip()
 
-            logger.debug(f"Output Element Text: {output_elem.text.strip()}")
             logger.debug(f"RepositoryCode: {repository_code}, TestCaseId: {test_case_id_value}")
 
             # Call the functions with the extracted values
