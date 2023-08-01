@@ -99,6 +99,7 @@ def main(xml_file_path, qase_token):
                 elif key.strip() == 'TestCaseId':
                     test_case_id_value = value.strip()
 
+            logger.debug(f"Output Element Text: {output_elem.text.strip()}")
             logger.debug(f"RepositoryCode: {repository_code}, TestCaseId: {test_case_id_value}")
 
             # Call the functions with the extracted values
