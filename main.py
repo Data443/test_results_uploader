@@ -37,10 +37,23 @@ def create_test_run(qase_token, repository_code, test_plan_id):
 def update_test_case(test_case_data, qase_token):
     url = f"https://api.qase.io/v1/result/{test_case_data['RepositoryCode']}/{test_case_data['TestRunId']}"
 
+    # Extract CDATA content and split lines by newline character
+    output_text = test_case_data['Output'].strip()
+    lines = output_text.split('\n')
+
+    # Process each line to extract key-value pairs
+    additional_info = {}
+    for line in lines:
+        line = line.strip()  # Remove leading/trailing whitespace
+        if '=' in line:
+            key, value = line.split('=')
+            additional_info[key.strip()] = value.strip()
+
+    # Add additional_info to the payload
     payload = {
         "status": test_case_data["Status"],
         "case_id": test_case_data["TestCaseId"],
-        "additional_info": f"RepositoryCode={test_case_data['RepositoryCode']}\nTestCaseId={test_case_data['TestCaseId']}"
+        "additional_info": additional_info
     }
     
     headers = {
@@ -79,7 +92,7 @@ def main(xml_file_path, qase_token):
 
     for test_case_elem in test_case_elems:
         # Extract 'RepositoryCode' and 'TestCaseId' from 'output' element
-        output_elem = test_case_elem.find('output')
+        output_elem = test_case_elem.find('./output')
         if output_elem is not None and output_elem.text:
             output_text = output_elem.text.strip()
             if output_text.startswith('<![CDATA[') and output_text.endswith(']]>'):
@@ -103,7 +116,8 @@ def main(xml_file_path, qase_token):
                             "RepositoryCode": repository_code,
                             "TestRunId": test_run_id,
                             "TestCaseId": int(test_case_id_value),
-                            "Status": test_case_elem.get("result")
+                            "Status": test_case_elem.get("result"),
+                            "Output": output_text  # Store the original CDATA content in the dictionary
                         }
                         logger.debug(f"Updating test case: {test_case_data}")
                         update_test_case(test_case_data, qase_token)
