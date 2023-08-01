@@ -137,4 +137,4 @@ if __name__ == "__main__":
         logger.error("Usage: python main.py <path_to_xml_file> <qase_token>")
         sys.exit(1)
     xml_file_path = sys.argv[1]
-    qase_token = sys.argv[2
+    qase_token = sys.argv[2]
