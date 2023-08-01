@@ -42,16 +42,16 @@ def update_test_case(test_case_data, qase_token):
         "case_id": test_case_data["TestCaseId"],
         "additional_info": f"RepositoryCode={test_case_data['RepositoryCode']}\nTestCaseId={test_case_data['TestCaseId']}"
     }
-    
+
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
         "Token": qase_token
     }
 
-    response = requests.post(url, json=payload, headers=headers)
+    response = requests.put(url, json=payload, headers=headers)
     logger.debug(response.text)
-
+    
 def main(xml_file_path, qase_token):
     # Load and parse the XML file
     tree = ET.parse(xml_file_path)
