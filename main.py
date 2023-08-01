@@ -42,7 +42,7 @@ def update_test_case(test_case_data, qase_token):
         "case_id": test_case_data["TestCaseId"],
         "additional_info": f"RepositoryCode={test_case_data['RepositoryCode']}\nTestCaseId={test_case_data['TestCaseId']}"
     }
-
+    
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
@@ -51,7 +51,7 @@ def update_test_case(test_case_data, qase_token):
 
     response = requests.put(url, json=payload, headers=headers)
     logger.debug(response.text)
-    
+
 def main(xml_file_path, qase_token):
     # Load and parse the XML file
     tree = ET.parse(xml_file_path)
@@ -67,52 +67,39 @@ def main(xml_file_path, qase_token):
     logger.debug(f"Number of 'test-case' elements found in the XML: {num_test_cases}")
 
     if not test_case_elems:
-        # If 'test-case' elements are not found at the root level, try to find them under 'test-suite' elements
-        test_suite_elems = root.findall('.//test-suite')
-        for suite_elem in test_suite_elems:
-            test_case_elems = suite_elem.findall('.//test-case')
-            num_test_cases = len(test_case_elems)
-            if num_test_cases > 0:
-                logger.debug("Found 'test-case' elements under 'test-suite' element.")
-                break
-
-    if not test_case_elems:
         logger.error("No 'test-case' elements found in the XML.")
         sys.exit(1)
 
     for test_case_elem in test_case_elems:
-        # Debug: Print XML of each 'test-case' element
-        logger.debug("Test-case XML:")
-        logger.debug(ET.tostring(test_case_elem, encoding='utf-8').decode())
-
-        # Find the 'output' element within 'test-case'
+        # Extract 'RepositoryCode' and 'TestCaseId' from 'output' element
         output_elem = test_case_elem.find('output')
         if output_elem is not None and output_elem.text:
-            # Extract 'RepositoryCode' and 'TestCaseId' from the 'output' element text
-            repository_code = None
-            test_case_id_value = None
-            for line in output_elem.text.strip().split('\n'):
-                line = line.strip()  # Remove leading/trailing whitespace
-                key, value = line.split('=')
-                if key.strip() == 'RepositoryCode':
-                    repository_code = value.strip()
-                elif key.strip() == 'TestCaseId':
-                    test_case_id_value = value.strip()
+            output_text = output_elem.text.strip()
+            if output_text.startswith('<![CDATA[') and output_text.endswith(']]>'):
+                output_text = output_text[len('<![CDATA['):-len(']]>')]
+                repository_code, test_case_id_value = None, None
+                for line in output_text.strip().split('\n'):
+                    line = line.strip()  # Remove leading/trailing whitespace
+                    key, value = line.split('=')
+                    if key.strip() == 'RepositoryCode':
+                        repository_code = value.strip()
+                    elif key.strip() == 'TestCaseId':
+                        test_case_id_value = value.strip()
 
-            logger.debug(f"RepositoryCode: {repository_code}, TestCaseId: {test_case_id_value}")
+                logger.debug(f"RepositoryCode: {repository_code}, TestCaseId: {test_case_id_value}")
 
-            # Call the functions with the extracted values
-            if repository_code and test_case_id_value:
-                test_run_id = create_test_run(qase_token, repository_code, 4)  # Replace '4' with the actual test plan ID
-                if test_run_id:
-                    test_case_data = {
-                        "RepositoryCode": repository_code,
-                        "TestRunId": test_run_id,
-                        "TestCaseId": int(test_case_id_value),
-                        "Status": test_case_elem.get("result")
-                    }
-                    logger.debug(f"Updating test case: {test_case_data}")
-                    update_test_case(test_case_data, qase_token)
+                # Call the functions with the extracted values
+                if repository_code and test_case_id_value:
+                    test_run_id = create_test_run(qase_token, repository_code, 4)  # Replace '4' with the actual test plan ID
+                    if test_run_id:
+                        test_case_data = {
+                            "RepositoryCode": repository_code,
+                            "TestRunId": test_run_id,
+                            "TestCaseId": int(test_case_id_value),
+                            "Status": test_case_elem.get("result")
+                        }
+                        logger.debug(f"Updating test case: {test_case_data}")
+                        update_test_case(test_case_data, qase_token)
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
