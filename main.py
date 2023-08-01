@@ -68,8 +68,10 @@ def main(xml_file_path, qase_token):
 
     if not test_case_elems:
         logger.error("No 'test-case' elements found in the XML.")
+        logger.error("Raw XML Content:")
+        logger.error(ET.tostring(root, encoding='utf-8').decode())  # Print the raw XML content for further inspection
         sys.exit(1)
-
+        
     for test_case_elem in test_case_elems:
         # Extract 'RepositoryCode' and 'TestCaseId' from 'output' element
         output_elem = test_case_elem.find('output')
