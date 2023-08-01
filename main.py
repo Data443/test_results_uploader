@@ -60,7 +60,7 @@ def main(xml_file_path, qase_token):
     # Debug: Print the content of the root element
     logger.debug("XML Root Element:")
     logger.debug(ET.tostring(root, encoding='utf-8').decode())
-
+    
     # Check if there are any 'test-case' elements in the XML
     test_case_elems = root.findall('.//test-case')
     num_test_cases = len(test_case_elems)
@@ -71,7 +71,7 @@ def main(xml_file_path, qase_token):
         logger.error("Raw XML Content:")
         logger.error(ET.tostring(root, encoding='utf-8').decode())  # Print the raw XML content for further inspection
         sys.exit(1)
-        
+
     for test_case_elem in test_case_elems:
         # Extract 'RepositoryCode' and 'TestCaseId' from 'output' element
         output_elem = test_case_elem.find('output')
