@@ -60,7 +60,12 @@ def main(xml_file_path, qase_token):
     # Debug: Print the content of the root element
     logger.debug("XML Root Element:")
     logger.debug(ET.tostring(root, encoding='utf-8').decode())
-    
+
+    # Log all elements present in the XML
+    logger.debug("All Elements in the XML:")
+    for elem in tree.iter():
+        logger.debug(elem.tag)
+        
     # Check if there are any 'test-case' elements in the XML
     test_case_elems = root.findall('.//test-case')
     num_test_cases = len(test_case_elems)
