@@ -53,7 +53,7 @@ def update_test_case(test_case_data, qase_token):
     logger.debug(response.text)
 
 def main(xml_file_path, qase_token):
-    # Load and parse the XML file
+    # Load and parse the XML file here
     tree = ET.parse(xml_file_path)
     root = tree.getroot()
 
