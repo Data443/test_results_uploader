@@ -27,7 +27,12 @@ def create_test_run(qase_token, repository_code, test_plan_id):
         "plan_id": test_plan_id
     }
 
+    logger.debug(f"Test Run Creation URL: {url}")
+    logger.debug(f"Test Run Creation Payload: {payload}")
+
     response = requests.post(url, json=payload, headers=headers)
+    logger.debug(f"Test Run Creation Response: {response.text}")
+
     if response.status_code == 200:
         return response.json()["result"]["id"]
     else:
