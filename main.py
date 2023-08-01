@@ -78,7 +78,7 @@ def main(xml_file_path, qase_token):
     logger.debug("All Elements in the XML:")
     for elem in tree.iter():
         logger.debug(elem.tag)
-        
+
     # Check if there are any 'test-case' elements in the XML
     test_case_elems = root.findall('.//test-case[@id]')
     num_test_cases = len(test_case_elems)
@@ -92,7 +92,7 @@ def main(xml_file_path, qase_token):
 
     for test_case_elem in test_case_elems:
         # Extract 'RepositoryCode' and 'TestCaseId' from 'output' element
-        output_elem = test_case_elem.find('./output')
+        output_elem = test_case_elem.find('.//output')  # <-- Updated XPath query here
         if output_elem is not None and output_elem.text:
             output_text = output_elem.text.strip()
             if output_text.startswith('<![CDATA[') and output_text.endswith(']]>'):
